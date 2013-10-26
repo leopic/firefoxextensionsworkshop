@@ -1,22 +1,10 @@
 /**
- * Copyright 2013 Jorge Villalobos
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
-
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
+ * Copyright 2013 leo picado
+**/
 
 "use strict";
 
-var WikipediaPlus = {
+var smoketest = {
   _doc : null,
 
   /**
@@ -29,21 +17,28 @@ var WikipediaPlus = {
 
     if ((null != this._doc) && (null != this._doc.location) &&
         (null != this._doc.location.hostname) &&
-        /\.wikipedia\.org$/.test(this._doc.location.hostname)) {
+        /\.google\.com$/.test(this._doc.location.hostname)) {
       this.log("Found wikipedia page.");
 
       let win = this._doc.defaultView;
       let unsafeWin = win.wrappedJSObject;
+      let dummyDOM;
 
-      Components.utils.import("chrome://wikipediaplus-lib/content/utils.js");
-      Utils.loadLibrary(
-        "chrome://wikipediaplus-scripts/content/jquery.min.js", win);
+      // utils
+      Components.utils.import("chrome://smoketest-lib/content/utils.js");
 
-      unsafeWin.$("#mw-panel").hide();
-      unsafeWin.$("#p-logo").hide();
-      unsafeWin.$("#content").css("margin-left", "1em");
+      // ext library
+      Utils.loadLibrary("chrome://smoketest-scripts/content/jquery.min.js", win);
+      Utils.loadLibrary("chrome://smoketest-scripts/content/underscore-min.js", win);
 
-      sendAsyncMessage("wikipediaplus-done", { title : this._doc.title });
+      unsafeWin.$('body').html(unsafeWin._.VERSION);
+
+      //unsafeWin.$("#mw-panel").hide();
+      //unsafeWin.$("#p-logo").hide();
+      //unsafeWin.$("#content").css("margin-left", "1em");
+      //$('');
+
+      sendAsyncMessage("smoketest-done", { title : this._doc.title });
     }
   },
 
@@ -52,12 +47,12 @@ var WikipediaPlus = {
   }
 };
 
-var WikipediaPlusListener = function(aEvent) { WikipediaPlus.run(aEvent); };
+var smoketestListener = function(aEvent) { smoketest.run(aEvent); };
 
-addEventListener("load", WikipediaPlusListener, true);
+addEventListener("load", smoketestListener, true);
 
 addMessageListener(
-  "wikipediaplus-unload",
+  "smoketest-unload",
   function(aMessage) {
-    removeEventListener("load", WikipediaPlusListener, true);
-  });
+    removeEventListener("load", smoketestListener, true);
+});
